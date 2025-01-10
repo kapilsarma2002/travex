@@ -1,1 +1,1 @@
-# travex
+A digital diary that combines mood tracking with travel documentation. Users log their trips, experiences, and daily events while rating their emotions to visualize how different journeys affect their well-being.
