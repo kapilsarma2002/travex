@@ -43,12 +43,12 @@ export default function TopBar() {
       {isOpen && (
         <div className="absolute top-full left-0 w-full bg-black/95 py-4 px-3 space-y-4 sm:hidden">
           <Link href={'/sign-in'} className="block">
-            <button className="w-full text-white hover:text-white/70 duration-1000 text-sm py-2">
+            <button className="w-full text-white hover:text-white/70 duration-700 text-sm py-2">
               Login
             </button>
           </Link>
           <Link href={'/sign-up'} className="block">
-            <button className="w-full bg-white/80 text-black py-2 px-3 rounded-lg text-sm font-semibold hover:bg-white duration-1000">
+            <button className="w-full bg-white/80 text-black py-2 px-3 rounded-lg text-sm font-semibold hover:bg-white duration-700">
               Sign up
             </button>
           </Link>
