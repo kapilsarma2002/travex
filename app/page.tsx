@@ -2,8 +2,8 @@ import TopBar from '@/components/TopBar'
 import LandingPageText from '@/components/Hero'
 export default function LandingPage() {
 
-  const title = 'The best journal app, for your travel.'
-  const description = 'A digital diary that combines mood tracking with travel documentation. Users log their trips, experiences, and daily events while rating their emotions to visualize how different journeys affect their well-being.'
+  const title = 'Your Travel, Your Story, Your Mood.'
+  const description = 'Discover a digital journal that seamlessly blends travel documentation with mood tracking. Capture your trips, daily experiences, and reflections while rating your emotions. Visualize how different journeys shape your well-being and cherish every moment along the way.'
 
   return (
     <div className="w-screen min-h-screen bg-black/95 text-white">
