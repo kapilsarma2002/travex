@@ -35,7 +35,7 @@ export default function LandingPageText({
         {description}
       </motion.p>
       <div className="mt-4 md:mt-6">
-        <Link href={'/sign-up'}>
+        <Link href={'/home'}>
         <div className="relative group rounded-xl inline-block p-[1.3px] overflow-hidden">
           <span className="absolute inset-[-1000%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#52525B_0%,#D4D4D8_50%,#52525B_100%)] group-hover:animate-none" />
           <button className="relative w-full sm:w-auto backdrop-blur-2xl rounded-xl bg-white/30 text-black px-3 py-1.5 sm:px-6 sm:py-3 text-md sm:text-md font-semibold hover:bg-white/80 duration-700 group-hover:scale-100">
