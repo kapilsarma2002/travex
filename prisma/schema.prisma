@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core User Model
+model User {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  clerkId   String    @unique
+  email     String    @unique
+  name      String?
+  avatarUrl String?
+  
+  // Relationships
+  trips     Trip[]
+  @@index([email])
+}
+
+// Main Trip Model
+model Trip {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  destination String    // Main destination
+  status      TripStatus @default(PLANNED)
+  
+  // Budget tracking
+  budget      Float?
+  currency    String    @default("USD")
+  
+  // Relationships
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  activities  Activity[]
+  expenses    Expense[]
+  analysis    TripAnalysis?
+
+  @@index([userId, status]) // Optimized for querying trips by status
+}
+
+// Activity Model (for daily planning)
+model Activity {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  title       String
+  type        ActivityType
+  startTime   DateTime
+  endTime     DateTime?
+  duration    DateTime?
+  location    String?
+  notes       String?  
+  cost        Float?
+  
+  // Relationships
+  tripId      String
+  trip        Trip      @relation(fields: [tripId], references: [id])
+  expenses    Expense[]
+  analysis    ActivityAnalysis?
+
+  @@index([tripId, startTime]) // Optimized for timeline queries
+}
+
+// Expense Tracking
+model Expense {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  
+  amount      Float
+  currency    String
+  category    ExpenseCategory
+  description String?
+  date        DateTime
+  
+  // Expenses can either be added for a trip or an activity
+  tripId      String?
+  trip        Trip?           @relation(fields: [tripId], references: [id])
+
+  activityId  String?
+  activity    Activity?       @relation(fields: [activityId], references: [id])
+
+
+  @@index([tripId])
+  @@index([activityId])
+  @@index([category])
+}
+
+// AI Analysis Models
+model TripAnalysis {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  
+  tripId      String    @unique
+  trip        Trip      @relation(fields: [tripId], references: [id])
+  
+  // AI analysis of each activity (values 1-10 unless noted)
+  overallMood        Int   // overall sentiment of the trip
+  noveltyFactor    Int?    // how new/unusual
+  stressLevel        Int     // Travel stress level
+  
+  @@index([tripId])
+}
+
+model ActivityAnalysis {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  
+  activityId  String    @unique
+  activity    Activity  @relation(fields: [activityId], references: [id])
+  
+  // AI analysis of each activity (values 1-10 unless noted)
+  sentimentScore   Float?  // -1 to 1, measures overall sentiment
+  excitementLevel  Int?    // how thrilling/engaging
+  noveltyFactor    Int?    // how new/unusual
+  budgetImpression Int?    // cost-effectiveness
+
+  
+  suggestedDuration Int? // Minutes
+  bestTimeOfDay    String? // Morning, Afternoon, Evening
+  
+  @@index([activityId])
+}
+
+// Enums for standardization
+enum TripStatus {
+  PLANNED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum ActivityType {
+  SIGHTSEEING
+  FOOD
+  TRANSPORTATION
+  ACCOMMODATION
+  ACTIVITY
+  OTHER
+}
+
+enum ExpenseCategory {
+  ACCOMMODATION
+  FOOD
+  TRANSPORT
+  ACTIVITIES
+  SHOPPING
+  MISC
+}
