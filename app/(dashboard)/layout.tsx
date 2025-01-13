@@ -8,11 +8,10 @@ import {
   IconUserBolt,
 } from '@tabler/icons-react'
 import Logo from '@/components/Logo'
-import Image from 'next/image'
-import { useUser } from '@clerk/nextjs'
+import { UserButton } from '@clerk/nextjs'
+import ThemeSwitcher from '@/components/Theme'
 
 export function Dashboard({ children }: { children: React.ReactNode }) {
-  const { user } = useUser()
 
   const links = [
     {
@@ -48,7 +47,7 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={
-        'h-screen w-screen flex flex-col md:flex-row bg-gray-100 dark:bg-black/90 flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden'
+        'h-screen w-screen flex flex-col md:flex-row flex-1 mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden'
       }
     >
       <Sidebar open={open} setOpen={setOpen}>
@@ -61,22 +60,9 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
-          <div>
-            <SidebarLink
-              link={{
-                label: user?.firstName ?? '',
-                href: '#',
-                icon: (
-                  <Image
-                    src={user?.imageUrl ?? ''}
-                    className="h-7 w-7 flex-shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
-                ),
-              }}
-            />
+          <div className='flex flex-col gap-4 justify-between items-start'>
+            <ThemeSwitcher />
+            <UserButton />
           </div>
         </SidebarBody>
       </Sidebar>
