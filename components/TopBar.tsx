@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import TravexLogo from './Logo'
+import { TravexLogo } from './Logo'
 import NavBar from './Nav'
 
 export default function TopBar() {

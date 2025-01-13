@@ -7,7 +7,7 @@ import {
   IconSettings,
   IconUserBolt,
 } from '@tabler/icons-react'
-import Logo from '@/components/Logo'
+import { TravexLogo, Logo } from '@/components/Logo'
 import { UserButton } from '@clerk/nextjs'
 import ThemeSwitcher from '@/components/Theme'
 
@@ -53,7 +53,7 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
-            {open ? <Logo /> : <LogoIcon />}
+            {open ? <TravexLogo /> : <Logo />}
             <div className="mt-8 flex flex-col gap-2">
               {links.map((link, idx) => (
                 <SidebarLink key={idx} link={link} />
@@ -67,18 +67,6 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
         </SidebarBody>
       </Sidebar>
       <div className="h-full w-full z-10">{children}</div>
-    </div>
-  )
-}
-
-export const LogoIcon = () => {
-  return (
-    <div className="relative w-8 h-8">
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-600 via-gray-800 to-black rounded-full opacity-70"></div>
-      <div className="absolute inset-1 bg-gray-100 rounded-full"></div>
-      <div className="absolute inset-2 border-2 border-black rounded-full flex items-center justify-center">
-        <div className="w-2 h-2 bg-gray-600 rounded-full animate-ping"></div>
-      </div>
     </div>
   )
 }
