@@ -19,6 +19,7 @@ export type TripData = {
   updatedAt?: Date
   title: string
   description: string | null
+  experience: string | null
   destination: string
   startDate: Date
   endDate: Date

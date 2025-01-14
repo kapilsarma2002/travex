@@ -25,13 +25,13 @@ const ThemeSwitcher = () => {
     <button
       aria-label="Toggle Dark Mode"
       type="button"
-      className="h-[30px] w-[30px]"
+      className="h-[25px] w-[25px]"
       onClick={toggleTheme}
     >
       {theme === 'dark' ? (
-        <IconSun size={30} className="text-gray-200 hover:text-gray-400" />
+        <IconSun size={25} className="text-gray-200 hover:text-gray-400" />
       ) : (
-        <IconMoon size={30} className="text-gray-800 hover:text-gray-600" />
+        <IconMoon size={25} className="text-gray-800 hover:text-gray-600" />
       )}
     </button>
   )

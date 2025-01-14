@@ -77,6 +77,7 @@ export default function TripForm() {
         endDate: new Date(data.endDate),
         description: data.description ?? null,
         budget: data.budget ?? null,
+        experience: null,
       }
 
       setLoading(false)

@@ -32,6 +32,7 @@ model Trip {
 
   title       String
   description String?
+  experience  String? @db.Text()
   startDate   DateTime
   endDate     DateTime
   destination String // Main destination
@@ -48,7 +49,7 @@ model Trip {
   expenses   Expense[]
   analysis   TripAnalysis?
 
-  @@index([userId,id])
+  @@unique([userId,id])
 }
 
 // Activity Model (for daily planning)
@@ -106,9 +107,10 @@ model TripAnalysis {
   tripId String @unique
   trip   Trip   @relation(fields: [tripId], references: [id])
 
-  // AI analysis of each activity (values 1-10 unless noted)
+  // AI analysis of the trip
+  summary       String @db.Text // Summary of the trip
+  worth         Int // Value for money
   overallMood   Int // overall sentiment of the trip
-  noveltyFactor Int? // how new/unusual
   stressLevel   Int // Travel stress level
 
   @@index([tripId])
