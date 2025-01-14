@@ -1,23 +1,26 @@
 'use client'
 
-import { createNewEntry } from "@/utils/api"
-import { useRouter } from "next/navigation";
+import { IconPlus } from '@tabler/icons-react'
+import { useRouter } from 'next/navigation'
 
 const NewTripCard = () => {
-  const router = useRouter();
+  const router = useRouter()
 
   const handleOnClick = async () => {
-    const data = await createNewEntry();
-    router.push(`/trip/${data.id}`);
+    router.push(`/trip/new`)
   }
 
   return (
-    <div className="cursor-pointer overflow-hidden rounded-lg bg-neutral-100 dark:bg-black shadow-lg dark:shadow-lg">
-      <div className="px-4 py-5 sm:p-6" onClick={handleOnClick}>
-        <div className="text-3xl">New Entry +</div>
+    <div
+      className="h-[150px] rounded-lg shadow-md p-4 cursor-pointer hover:shadow-xl transition-shadow duration-200 bg-neutral-100 dark:bg-black flex flex-col items-center justify-center gap-2"
+      onClick={handleOnClick}
+    >
+      <div className="text-xl font-medium text-gray-600 dark:text-gray-400">
+        Plan New Trip
       </div>
+      <IconPlus size={24} className="mb-2 text-gray-600 dark:text-gray-400" />
     </div>
   )
 }
 
-export default NewTripCard;
+export default NewTripCard

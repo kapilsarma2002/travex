@@ -16,7 +16,7 @@ export default function LandingPageText({
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
 
-  const href = userId ? '/dashboard' : '/new-user'
+  const href = userId ? '/trip' : '/new-user'
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 md:px-8">

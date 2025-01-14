@@ -1,5 +1,6 @@
 import { getUserByClerkId } from "@/utils/auth";
 import { prisma } from "@/utils/db";
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -20,6 +21,8 @@ export async function POST(request: Request) {
         currency: body.currency,
       }
     });
+
+    revalidatePath('/trip');
 
     return NextResponse.json({ data: entry }, { status: 201 });
   } catch (error) {

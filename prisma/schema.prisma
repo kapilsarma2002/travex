@@ -48,7 +48,7 @@ model Trip {
   expenses   Expense[]
   analysis   TripAnalysis?
 
-  @@index([userId, status]) // Optimized for querying trips by status
+  @@index([userId,id])
 }
 
 // Activity Model (for daily planning)
