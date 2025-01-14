@@ -60,6 +60,7 @@ export default function Editor({ entry }: { entry: Trip }) {
           animate={{ opacity: 1, y: 0 }}
           className="bg-neutral-100 dark:bg-zinc-900 rounded-lg p-6"
         >
+				<div className="m-2 text-lg font-semibold">Describe your experience of this trip</div>
         {isSaving && 
           <motion.div
             animate={{ rotate: 360 }}
@@ -70,7 +71,7 @@ export default function Editor({ entry }: { entry: Trip }) {
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full p-2 border rounded-lg dark:bg-zinc-950 dark:border-zinc-700 focus:outline-none"
+            className="w-full p-4 border rounded-lg dark:bg-zinc-950 dark:border-zinc-700 focus:outline-none"
             rows={16}
           />
         </motion.div>

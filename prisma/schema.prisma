@@ -112,6 +112,7 @@ model TripAnalysis {
   worth         Int // Value for money
   overallMood   Int // overall sentiment of the trip
   stressLevel   Int // Travel stress level
+  color         String // Color based on the mood
 
   @@index([tripId])
 }
