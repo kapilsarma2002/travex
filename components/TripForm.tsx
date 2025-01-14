@@ -21,46 +21,80 @@ import {
   SelectValue,
 } from '@/components/Select'
 import { Currencies } from '@/utils/types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { createNewEntry } from '@/utils/api'
+import { TripStatus } from '@prisma/client'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
-  title: z.string().min(2).max(50),
+  title: z.string().min(4, "Title must be at least 4 characters").max(50),
   description: z.string().optional(),
-  destination: z.string().min(2),
-  startDate: z.string(),
-  endDate: z.string(),
-  status: z.string(),
-  budget: z.number().optional(),
-  currency: z.string(),
+  destination: z.string().min(4, "Destination is required"),
+  startDate: z.string().min(1, "Start date is required"),
+  endDate: z.string().min(1, "End date is required"),
+  status: z.nativeEnum(TripStatus, {
+    required_error: "Status is required"
+  }),
+  budget: z.union([
+    z.number(),
+    z.string().transform((val) => (val === '' ? null : Number(val)))
+  ]).nullable().optional(),
+  currency: z.string().min(1, "Currency is required"),
 })
 
 export default function TripForm() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  const form = useForm<z.infer<typeof formSchema>>({
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  type FormValues = z.infer<typeof formSchema>;
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
+      title: '',
+      description: '',
+      destination: '',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
       status: 'PLANNED',
+      budget: null,
       currency: 'USD',
     },
   })
-
-  if (!mounted) {
-    return null
-  }
 
   const item = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
   }
 
+  const onSubmit = async (data: FormValues) => {
+    event?.preventDefault()
+    try {
+      setLoading(true)
+      
+      const tripData = {
+        ...data,
+        startDate: new Date(data.startDate),
+        endDate: new Date(data.endDate),
+        description: data.description ?? null,
+        budget: data.budget ?? null,
+      }
+
+      setLoading(false)
+      
+      const res = await createNewEntry(tripData)
+      console.log('New trip created:', res)
+
+      router.push(`/trip/${res.id}`)
+    } catch (error) {
+      console.error('Error submitting form:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <form
-      onSubmit={form.handleSubmit((data) => console.log(data))}
+      onSubmit={form.handleSubmit(onSubmit)}
       className="space-y-6"
     >
       <motion.div variants={item}>
@@ -71,9 +105,19 @@ export default function TripForm() {
             <FormItem>
               <FormLabel>Trip Title</FormLabel>
               <FormControl>
-                <Input placeholder="Enter trip title" {...field} />
+                <Input 
+                  placeholder="Enter trip title" 
+                  {...field}
+                  value={field.value || ''} 
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {form.formState.errors.title && (
+                  <span className="text-sm text-red-500">
+                    {form.formState.errors.title.message}
+                  </span>
+                )}
+              </FormMessage>
             </FormItem>
           )}
         />
@@ -85,7 +129,7 @@ export default function TripForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Description (Optional)</FormLabel>
               <FormControl>
                 <Input placeholder="Enter description" {...field} />
               </FormControl>
@@ -105,7 +149,13 @@ export default function TripForm() {
               <FormControl>
                 <Input placeholder="Enter destination" {...field} />
               </FormControl>
-              <FormMessage />
+              <FormMessage>
+                {form.formState.errors.destination && (
+                  <span className="text-sm text-red-500">
+                    {form.formState.errors.destination.message}
+                  </span>
+                )}
+              </FormMessage>
             </FormItem>
           )}
         />
@@ -172,17 +222,39 @@ export default function TripForm() {
         className="grid grid-cols-1 sm:grid-cols-2 gap-4"
       >
         <FormField
-          control={form.control}
-          name="budget"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Budget</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="Enter budget" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        control={form.control}
+        name="budget"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Estimated Budget (Optional)</FormLabel>
+            <FormControl>
+              <Input 
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter budget" 
+                {...field}
+                value={field.value || ''} 
+                onKeyPress={(e) => {
+                  if (!/[0-9.]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Only allow numbers and one decimal point
+                  const sanitizedValue = value.replace(/[^0-9.]/g, '');
+                  // Ensure only one decimal point
+                  const parts = sanitizedValue.split('.');
+                  const finalValue = parts[0] + (parts[1] ? '.' + parts[1] : '');
+                  
+                  field.onChange(finalValue === '' ? null : Number(finalValue));
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
         />
 
         <FormField
@@ -215,10 +287,21 @@ export default function TripForm() {
       </motion.div>
 
       <motion.div variants={item} className="flex justify-end space-x-4 pt-4">
-        <Button variant="outline" onClick={() => form.reset()}>
+        <Button 
+          type="button"
+          variant="outline" 
+          onClick={() => form.reset()}
+          disabled={loading}
+        >
           Reset
         </Button>
-        <Button type="submit">Create Trip</Button>
+        <Button 
+          type="submit"
+          isLoading={!form.formState.isValid || loading || Object.keys(form.formState.errors).length > 0}
+          className="cursor-pointer"
+        >
+          {loading ? 'Creating...' : 'Create Trip'}
+        </Button>
       </motion.div>
     </form>
   )

@@ -4,7 +4,7 @@ const createURL = (path: string) => {
   return window.location.origin + path;
 }
 
-export const createNewEntry = async (data?: TripData) => {
+export const createNewEntry = async (data: TripData) => {
   const url = createURL('/api/trip');
   console.log(url);
   const res = await fetch(new Request(url), {

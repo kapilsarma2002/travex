@@ -14,9 +14,9 @@ export const Currencies = [
 ]; 
 
 export type TripData = {
-  id: string
-  createdAt: Date
-  updatedAt: Date
+  id?: string
+  createdAt?: Date
+  updatedAt?: Date
   title: string
   description: string | null
   destination: string
@@ -25,5 +25,5 @@ export type TripData = {
   status: TripStatus
   budget: number | null
   currency: string
-  userId: string
+  userId?: string
 }
