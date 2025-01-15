@@ -2,8 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import 'leaflet/dist/leaflet.css'
 import { Icon } from 'leaflet'
+import { motion } from 'framer-motion'
+import 'leaflet/dist/leaflet.css'
+
+interface Place {
+  id: string
+  destination: string
+  startDate: string
+  coordinates?: { lat: number; lng: number }
+}
 
 const customIcon = new Icon({
   iconUrl: 'data:image/svg+xml;base64,' + btoa(`
@@ -20,19 +28,14 @@ const customIcon = new Icon({
   className: 'transition-transform hover:scale-125'
 })
 
-interface Place {
-  id: string
-  destination: string
-  startDate: string
-  coordinates?: { lat: number; lng: number }
-}
-
 export default function WorldMap({ places }: { places: Place[] }) {
   const [locations, setLocations] = useState<Place[]>([])
 
   useEffect(() => {
-    async function fetchCoordinates() {
-      const withCoordinates = await Promise.all(
+    if (!places.length) return
+
+    async function geocodePlaces() {
+      const updated = await Promise.all(
         places.map(async (place) => {
           const res = await fetch(
             `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place.destination)}&format=json&limit=1`
@@ -40,26 +43,29 @@ export default function WorldMap({ places }: { places: Place[] }) {
           const data = await res.json()
           return {
             ...place,
-            coordinates: data.length > 0 ? {
-              lat: parseFloat(data[0].lat),
-              lng: parseFloat(data[0].lon)
-            } : undefined
+            coordinates: data.length > 0
+              ? { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
+              : undefined
           }
         })
       )
-      setLocations(withCoordinates.filter(loc => loc.coordinates))
+      setLocations(updated.filter(p => p.coordinates))
     }
-    fetchCoordinates()
+    geocodePlaces()
   }, [places])
 
+  if (!locations.length) return <div className='h-full w-full flex items-center justify-center'>
+    <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-4 h-4 border-2 border-gray-300 dark:border-gray-700 border-t-blue-500 rounded-full my-2"
+              />
+  </div>
+
   return (
-    <MapContainer
-      center={[20, 0]}
-      zoom={2}
-      className="w-full h-full"
-    >
+    <MapContainer center={[20, 0]} zoom={2} className="w-full h-full">
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {locations.map(location => (
+      {locations.map((location) => (
         location.coordinates && (
           <Marker
             key={location.id}
