@@ -113,7 +113,7 @@ model TripAnalysis {
 
   // AI analysis of the trip
   summary         String @db.Text // Summary of the trip
-  worth           Int // Value for money
+  worth           Boolean // Is the trip worth it?
   overallMood     String // overall sentiment of the trip
   stressLevel     Int // Travel stress level
   color           String // Color based on the mood

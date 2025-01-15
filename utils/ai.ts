@@ -29,10 +29,8 @@ export const schema = z.object({
     .min(50, 'Summary should be at least 50 characters')
     .max(500, 'Summary should not exceed 500 characters'),
   worth: z
-    .number()
-    .int()
-    .min(1, 'Worth should be between 1-10')
-    .max(10, 'Worth should be between 1-10'),
+    .boolean()
+    .describe('Yes if worth it, No if not worth it'),
   overallMood: z.enum(allowedMoods, {
     description: 'Mood must be one of the predefined values',
     required_error: 'Mood is required',
@@ -58,7 +56,7 @@ export const systemPrompt =
   RULES:
   - Provide analysis in valid JSON format
   - Summary must be 50-500 characters
-  - Worth is rated 1-10 (10 being best value)
+  - Worth is a boolean (true if worth it, false if not worth it)
   - Mood must be ONE of: [Excellent, Great, Good, Neutral, Poor, Bad, Terrible]
   - Stress is rated 1-10 (10 being most stressful)
   - Color must be hex code (#FF0000 red for negative to #00FF00 green for positive, DO NOT EVER RETURN #000000 black or #FFFFFF white as they are used for text)
@@ -70,7 +68,7 @@ export const systemPrompt =
   Example Output:
   {
     "summary": "Enchanting Paris experience with iconic views and authentic cafe culture. Navigation challenges and security concerns were present but manageable. High costs balanced by memorable experiences.",
-    "worth": 7,
+    "worth": true,
     "overallMood": "Great",
     "stressLevel": 6,
     "color": "#7FFF00",

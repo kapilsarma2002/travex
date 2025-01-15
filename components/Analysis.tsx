@@ -11,7 +11,7 @@ export function Analysis(initialAnalysis: TripAnalysis ) {
   }
   const analysisData = [
     { name: 'Mood', value: analysis.overallMood },
-    { name: 'Worth', value: analysis.worth },
+    { name: 'Worth', value: analysis.worth ? 'Yes': (analysis.worth === false ? 'No' : null) },
     { name: 'Stress level', value: analysis.stressLevel },
   ]
 
