@@ -30,3 +30,24 @@ export const updateEntry = async (id: string, experience: string) => {
     return data.data;
   }
 }
+
+export const askQuestion = async (question: string) => {
+  try {
+    const res = await fetch('/api/question', {
+      method: 'POST',
+      body: JSON.stringify({ question }),
+    })
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+
+    const data = await res.json()
+    return data
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error('Invalid response format from server')
+    }
+    throw error
+  }
+}
