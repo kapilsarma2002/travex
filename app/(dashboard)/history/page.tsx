@@ -12,6 +12,14 @@ const getData = async () => {
     },
     orderBy: {
       createdAt: 'asc'
+    },
+    select: {
+      id: true,
+      color: true,
+      createdAt: true,
+      stressLevel: true,
+      overallMood: true,
+      sentimentScore: true
     }
   })
 

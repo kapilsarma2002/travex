@@ -6,7 +6,6 @@ const createURL = (path: string) => {
 
 export const createNewEntry = async (data: TripData) => {
   const url = createURL('/api/trip');
-  console.log(url);
   const res = await fetch(new Request(url), {
     method: 'POST',
     body: JSON.stringify(data)
@@ -33,17 +32,16 @@ export const updateEntry = async (id: string, experience: string) => {
 
 export const askQuestion = async (question: string) => {
   try {
-    const res = await fetch('/api/question', {
+    const url = createURL('/api/question')
+    const res = await fetch(new Request(url), {
       method: 'POST',
       body: JSON.stringify({ question }),
     })
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`)
+    if (res.ok) {
+      const data = await res.json();
+      return data.data;
     }
-
-    const data = await res.json()
-    return data
   } catch (error) {
     if (error instanceof SyntaxError) {
       throw new Error('Invalid response format from server')

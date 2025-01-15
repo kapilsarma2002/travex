@@ -4,8 +4,8 @@ import { Sidebar, SidebarBody, SidebarLink } from '@/components/SideBar'
 import {
   IconGraph,
   IconBrandTabler,
-  IconSettings,
   IconUserBolt,
+  IconMap2,
 } from '@tabler/icons-react'
 import { TravexLogo, Logo } from '@/components/Logo'
 import { UserButton } from '@clerk/nextjs'
@@ -29,19 +29,19 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
       ),
     },
     {
+      label: 'Map',
+      href: '/map',
+      icon: (
+        <IconMap2 className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
       label: 'Profile',
       href: '/profile',
       icon: (
         <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
-    },
-    {
-      label: 'Settings',
-      href: '/settings',
-      icon: (
-        <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+    }
   ]
   const [open, setOpen] = useState(false)
   return (

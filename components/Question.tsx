@@ -67,7 +67,7 @@ const Question = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             className="col-span-2 h-full rounded-lg bg-white dark:bg-zinc-900 shadow-sm
-                      p-4 lg:p-6 overflow-y-auto"
+                      px-4 py-2 overflow-y-auto"
           >
             <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{answer}</p>
           </motion.div>
