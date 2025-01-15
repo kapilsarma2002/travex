@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { Trip } from '@prisma/client'
 import { useAutosave } from 'react-autosave'
 import { updateEntry } from '@/utils/api'
+import { useAnalysis } from './AnalysisContext'
 
 const statusColors = {
   PLANNED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
@@ -19,12 +20,28 @@ const statusColors = {
 export default function Editor({ entry }: { entry: Trip }) {
   const [value, setValue] = useState(entry.experience ?? '')
   const [isSaving, setIsSaving] = useState(false)
+  const [isModified, setIsModified] = useState(false)
+  const initialValue = useRef(entry.experience ?? '')
+  const { setAnalysis } = useAnalysis()
 
+  const handleChange = (e) => {
+    const newValue = e.target.value
+    setValue(newValue)
+    setIsModified(newValue !== initialValue.current)
+  }
+  
   useAutosave({
     data: value,
+    interval: 5000,
     onSave: async (_value) => {
+      if (!isModified) return
+
+
       setIsSaving(true)
       const updatedEntry = await updateEntry(entry.id, _value)
+      if (updatedEntry?.analysis) {
+        setAnalysis(updatedEntry.analysis)
+      }
       setIsSaving(false)
     },
   })
@@ -60,7 +77,7 @@ export default function Editor({ entry }: { entry: Trip }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-neutral-100 dark:bg-zinc-900 rounded-lg p-6"
+          className="bg-neutral-100 dark:bg-zinc-900 rounded-lg p-4"
         >
           <div className="flex items-center justify-between">
             <div className="m-2 text-lg font-semibold">
@@ -76,9 +93,9 @@ export default function Editor({ entry }: { entry: Trip }) {
           </div>
           <textarea
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={handleChange}
             className="w-full p-4 border rounded-lg dark:bg-zinc-950 dark:border-zinc-700 focus:outline-none"
-            rows={16}
+            rows={24}
           />
         </motion.div>
       </div>

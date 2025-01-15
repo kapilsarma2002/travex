@@ -43,7 +43,7 @@ RULES:
 - Worth is rated 1-10 (10 being best value)
 - Mood must be ONE of: [Excellent, Great, Good, Neutral, Poor, Bad, Terrible]
 - Stress is rated 1-10 (10 being most stressful)
-- Color must be hex code (#FF0000 red for negative to #00FF00 green for positive)
+- Color must be hex code (#FF0000 red for negative to #00FF00 green for positive, DO NOT EVER RETURN #000000 black or #FFFFFF white as they are used for text)
 
 Example Input:
 "Our Paris trip was incredible! The Eiffel Tower was breathtaking at sunset. Local cafes were pricey but worth it. Metro was confusing at first but we got used to it. Had to deal with some pickpocket attempts near tourist spots."

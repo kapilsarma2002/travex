@@ -22,17 +22,17 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
       ),
     },
     {
-      label: 'Profile',
-      href: '/profile',
-      icon: (
-        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
       label: 'History',
       href: '/history',
       icon: (
         <IconGraph className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
+      label: 'Profile',
+      href: '/profile',
+      icon: (
+        <IconUserBolt className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
     {

@@ -3,7 +3,7 @@ import { getUserByClerkId } from "@/utils/auth"
 import { prisma } from "@/utils/db"
 import { NextResponse } from "next/server"
 
-export const PATCH = async (request: Request, { params }) => {
+export const PATCH = async (request: Request, { params }: { params : { id: string, experience: string }}) => {
   try {
     const { experience } = await request.json()
     const user = await getUserByClerkId()
@@ -19,23 +19,30 @@ export const PATCH = async (request: Request, { params }) => {
         experience
       }
     })
-
+    
     if (experience) {
       const analysis = await analyze(experience)
-      await prisma.tripAnalysis.upsert({
+      const updatedAnalysis = await prisma.tripAnalysis.upsert({
         where: { 
           tripId: updatedEntry.id 
         },
         update: {
-           ...analysis 
+          ...analysis 
         },
         create: {
           tripId: updatedEntry.id,
           ...analysis
         }
       })
+    
+      return NextResponse.json({ 
+        data: {
+          ...updatedEntry,
+          analysis: updatedAnalysis
+        }
+      })
     }
-
+    
     return NextResponse.json({ data: updatedEntry })
     
   } catch (error) {
