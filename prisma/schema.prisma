@@ -20,6 +20,7 @@ model User {
 
   // Relationships
   trips Trip[]
+  analyses TripAnalysis[]
 
   @@index([email])
 }
@@ -107,14 +108,18 @@ model TripAnalysis {
   tripId String @unique
   trip   Trip   @relation(fields: [tripId], references: [id])
 
-  // AI analysis of the trip
-  summary       String @db.Text // Summary of the trip
-  worth         Int // Value for money
-  overallMood   String // overall sentiment of the trip
-  stressLevel   Int // Travel stress level
-  color         String // Color based on the mood
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 
-  @@index([tripId])
+  // AI analysis of the trip
+  summary         String @db.Text // Summary of the trip
+  worth           Int // Value for money
+  overallMood     String // overall sentiment of the trip
+  stressLevel     Int // Travel stress level
+  color           String // Color based on the mood
+  sentimentScore  Float  @default(0)// -10 to 10, measures overall sentiment
+
+  @@index([userId])
 }
 
 // model ActivityAnalysis {

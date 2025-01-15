@@ -3,7 +3,13 @@ import { getUserByClerkId } from "@/utils/auth"
 import { prisma } from "@/utils/db"
 import { NextResponse } from "next/server"
 
-export const PATCH = async (request: Request, { params }: { params : { id: string, experience: string }}) => {
+interface RouteParams {
+  params: {
+    id: string
+  }
+}
+
+export const PATCH = async (request: Request, { params }: RouteParams) => {
   try {
     const { experience } = await request.json()
     const user = await getUserByClerkId()
@@ -30,6 +36,7 @@ export const PATCH = async (request: Request, { params }: { params : { id: strin
           ...analysis 
         },
         create: {
+          userId: user.id,
           tripId: updatedEntry.id,
           ...analysis
         }

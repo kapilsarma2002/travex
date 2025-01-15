@@ -44,6 +44,12 @@ export const schema = z.object({
     .min(1, 'Stress level should be between 1-10')
     .max(10, 'Stress level should be between 1-10'),
   color: z.string().regex(/^#[0-9A-F]{6}$/i, 'Color must be a valid hex code'),
+  sentimentScore: z
+    .number()
+    .int()
+    .min(-10, 'Sentiment score should be between -10 and 10')
+    .max(10, 'Sentiment score should be between -10 and 10')
+    .describe('A score from -10 (extremely negative) to 10 (extremely positive)'),
 })
 
 export const systemPrompt = 
@@ -56,6 +62,7 @@ export const systemPrompt =
   - Mood must be ONE of: [Excellent, Great, Good, Neutral, Poor, Bad, Terrible]
   - Stress is rated 1-10 (10 being most stressful)
   - Color must be hex code (#FF0000 red for negative to #00FF00 green for positive, DO NOT EVER RETURN #000000 black or #FFFFFF white as they are used for text)
+  - SentimentScore is rated -10 to 10 (-10 being extremely negative, 0 being neutral, 10 being extremely positive)
 
   Example Input:
   "Our Paris trip was incredible! The Eiffel Tower was breathtaking at sunset. Local cafes were pricey but worth it. Metro was confusing at first but we got used to it. Had to deal with some pickpocket attempts near tourist spots."
@@ -66,15 +73,17 @@ export const systemPrompt =
     "worth": 7,
     "overallMood": "Great",
     "stressLevel": 6,
-    "color": "#7FFF00"
+    "color": "#7FFF00",
+    "sentimentScore": 8
   }
 
   Analyze the input considering:
   1. Overall experience quality
   2. Value for money
-  3. Emotional sentiment
+  3. Emotional sentiment and tone
   4. Challenges faced
   5. Notable highlights
+  6. Balance of positive vs negative experiences
 
   Return ONLY valid JSON matching the format above.`
 
@@ -92,8 +101,8 @@ export const analyze = async (experience: string) => {
 
     const content = chatResponse.choices?.[0]?.message?.content
     if (!content) throw new Error('No response from AI')
-
-    const analysis = JSON.parse(content)
+    debugger
+    const analysis = JSON.parse(typeof content === 'string' ? content : JSON.stringify(content))
     const validatedAnalysis = schema.parse(analysis)
 
     return validatedAnalysis

@@ -66,7 +66,7 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
           </div>
         </SidebarBody>
       </Sidebar>
-      <div className="h-full w-full z-10">{children}</div>
+      <div className="h-full w-full z-10 overflow-y-auto">{children}</div>
     </div>
   )
 }
