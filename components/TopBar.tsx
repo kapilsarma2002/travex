@@ -15,9 +15,9 @@ export default function TopBar() {
           <TravexLogo />
         </div>
 
-        <div className="hidden sm:block">
+        {/* <div className="hidden sm:block">
           <NavBar />
-        </div>
+        </div> */}
 
         <div className="hidden sm:flex items-center space-x-4">
           <Link href={'/sign-in'}>
