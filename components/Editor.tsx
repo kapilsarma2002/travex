@@ -4,19 +4,21 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 import { Trip } from '@prisma/client'
-import  { useAutosave } from 'react-autosave'
+import { useAutosave } from 'react-autosave'
 import { updateEntry } from '@/utils/api'
 
 const statusColors = {
-  PLANNED:   'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  ONGOING:   'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-  COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-  CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+  PLANNED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  ONGOING:
+    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+  COMPLETED:
+    'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+  CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
 }
 
 export default function Editor({ entry }: { entry: Trip }) {
   const [value, setValue] = useState(entry.experience ?? '')
-  const [ isSaving, setIsSaving ] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useAutosave({
     data: value,
@@ -24,7 +26,7 @@ export default function Editor({ entry }: { entry: Trip }) {
       setIsSaving(true)
       const updatedEntry = await updateEntry(entry.id, _value)
       setIsSaving(false)
-    }
+    },
   })
 
   return (
@@ -60,14 +62,18 @@ export default function Editor({ entry }: { entry: Trip }) {
           animate={{ opacity: 1, y: 0 }}
           className="bg-neutral-100 dark:bg-zinc-900 rounded-lg p-6"
         >
-				<div className="m-2 text-lg font-semibold">Describe your experience of this trip</div>
-        {isSaving && 
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-4 h-4 border-2 border-gray-300 dark:border-gray-700 border-t-blue-500 rounded-full"
-          />
-        }
+          <div className="flex items-center justify-between">
+            <div className="m-2 text-lg font-semibold">
+              Describe your experience of this trip
+            </div>
+            {isSaving && (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-4 h-4 border-2 border-gray-300 dark:border-gray-700 border-t-blue-500 rounded-full my-2"
+              />
+            )}
+          </div>
           <textarea
             value={value}
             onChange={(e) => setValue(e.target.value)}

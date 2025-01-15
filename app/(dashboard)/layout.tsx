@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { Sidebar, SidebarBody, SidebarLink } from '@/components/SideBar'
 import {
-  IconArrowLeft,
+  IconGraph,
   IconBrandTabler,
   IconSettings,
   IconUserBolt,
@@ -29,17 +29,17 @@ export function Dashboard({ children }: { children: React.ReactNode }) {
       ),
     },
     {
+      label: 'History',
+      href: '/history',
+      icon: (
+        <IconGraph className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
+      ),
+    },
+    {
       label: 'Settings',
       href: '/settings',
       icon: (
         <IconSettings className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
-    {
-      label: 'Logout',
-      href: '#',
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
   ]
