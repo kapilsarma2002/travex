@@ -2,17 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import { Icon } from 'leaflet'
-import { getCoordinates } from '@/utils/geocode'
-import { format } from 'date-fns'
 import 'leaflet/dist/leaflet.css'
-
-interface Place {
-  id: string
-  startDate: Date
-  destination: string
-  coordinates?: { lat: number; lng: number }
-}
+import { Icon } from 'leaflet'
 
 const customIcon = new Icon({
   iconUrl: 'data:image/svg+xml;base64,' + btoa(`
@@ -29,52 +20,65 @@ const customIcon = new Icon({
   className: 'transition-transform hover:scale-125'
 })
 
-export default function Map({ places }: { places: Place[] }) {
+interface Place {
+  id: string
+  destination: string
+  startDate: string
+  coordinates?: { lat: number; lng: number }
+}
+
+export default function WorldMap({ places }: { places: Place[] }) {
   const [locations, setLocations] = useState<Place[]>([])
 
   useEffect(() => {
-    const getLocations = async () => {
+    async function fetchCoordinates() {
       const withCoordinates = await Promise.all(
         places.map(async (place) => {
-          const coords = await getCoordinates(place.destination)
-          return { ...place, coordinates: coords || undefined }
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place.destination)}&format=json&limit=1`
+          )
+          const data = await res.json()
+          return {
+            ...place,
+            coordinates: data.length > 0 ? {
+              lat: parseFloat(data[0].lat),
+              lng: parseFloat(data[0].lon)
+            } : undefined
+          }
         })
       )
       setLocations(withCoordinates.filter(loc => loc.coordinates))
     }
-    
-    getLocations()
+    fetchCoordinates()
   }, [places])
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)]">
-      <MapContainer
-        center={[20, 0]}
-        zoom={2}
-        className="w-full h-full"
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {locations.map(location => (
-          location.coordinates && (
-            <Marker 
-              key={location.id}
-              position={[location.coordinates.lat, location.coordinates.lng]}
-              icon={customIcon}
-            >
-              <Popup>
-                <div className="p-3 min-w-[200px]">
-                  <h3 className="font-semibold text-lg mb-2">
-                    {location.destination}
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    {format(new Date(location.startDate), 'MMM dd, yyyy')}
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-          )
-        ))}
-      </MapContainer>
-    </div>
+    <MapContainer
+      center={[20, 0]}
+      zoom={2}
+      className="w-full h-full"
+    >
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      {locations.map(location => (
+        location.coordinates && (
+          <Marker
+            key={location.id}
+            icon={customIcon}
+            position={[location.coordinates.lat, location.coordinates.lng]}
+          >
+            <Popup>
+              <div className="p-3 min-w-[200px]">
+                <h3 className="font-semibold text-lg mb-2">
+                  {location.destination}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {new Date(location.startDate).toLocaleDateString()}
+                </p>
+              </div>
+            </Popup>
+          </Marker>
+        )
+      ))}
+    </MapContainer>
   )
 }

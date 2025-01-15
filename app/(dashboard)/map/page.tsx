@@ -1,65 +1,27 @@
-import WorldMap from "@/components/WorldMap"
-import { formatPlaces } from "@/utils/ai"
-import { getUserByClerkId } from "@/utils/auth"
-import { prisma } from "@/utils/db"
+'use client'
 
-interface Place {
-  id: string
-  destination: string
-  startDate: Date
-  corrected?: boolean
-}
+// Force dynamic to avoid SSR errors
+export const dynamic = 'force-dynamic'
 
-async function getDestinations() {
-  try {
-    const user = await getUserByClerkId()
-    const destinations = await prisma.trip.findMany({
-      where: {
-        userId: user.id,
-      },
-      select: {
-        id: true,
-        destination: true,
-        startDate: true,
-      },
-      orderBy: {
-        startDate: 'desc',
-      },
-    })
+import { useState, useEffect } from 'react'
+import WorldMap from '@/components/WorldMap'
+import { getDestinations } from '@/utils/api'
 
-    if (destinations.length) {
-      const formattedPlaces = await formatPlaces(destinations)
+export default function MapPage() {
+  const [places, setPlaces] = useState([])
 
-      await Promise.all(
-        formattedPlaces
-          .filter((place: Place) => place.corrected)
-          .map((place: Place) =>
-            prisma.trip.update({
-              where: { id: place.id },
-              data: {
-                destination: place.destination,
-              },
-            })
-          )
-      )
+  useEffect(() => {
+    async function fetchPlaces() {
+      const res = await getDestinations()
+      setPlaces(res)
     }
-
-    return destinations
-  } catch (error) {
-    console.error('Failed to fetch destinations:', error)
-    return []
-  }
-}
-
-const Map = async() => {
-  
-  const places = await getDestinations()
+    
+    fetchPlaces()
+  }, [])
 
   return (
-    <div>
+    <div className="w-full h-[calc(100vh-4rem)]">
       <WorldMap places={places} />
     </div>
   )
 }
-
-export default Map

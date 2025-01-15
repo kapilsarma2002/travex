@@ -49,3 +49,22 @@ export const askQuestion = async (question: string) => {
     throw error
   }
 }
+
+export const getDestinations = async () => {
+  try {
+    const url = createURL('/api/map')
+    const res = await fetch(new Request(url), {
+      method: 'GET',
+    })
+
+    if (res.ok) {
+      const data = await res.json()
+      return data
+    }
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error('Invalid response format from server')
+    }
+    throw error
+  }
+}
