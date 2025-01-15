@@ -4,6 +4,16 @@ import { z } from 'zod'
 const apiKey = process.env.MISTRAL_API_KEY
 const mistral = new Mistral({ apiKey: apiKey })
 
+const allowedMoods = [
+  'Excellent',
+  'Great',
+  'Good',
+  'Neutral',
+  'Poor',
+  'Bad',
+  'Terrible'
+] as const
+
 export const schema = z.object({
   summary: z.string()
     .min(50, "Summary should be at least 50 characters")
@@ -12,10 +22,11 @@ export const schema = z.object({
     .int()
     .min(1, "Worth should be between 1-10")
     .max(10, "Worth should be between 1-10"),
-  overallMood: z.number()
-    .int()
-    .min(1, "Mood should be between 1-10")
-    .max(10, "Mood should be between 1-10"),
+    overallMood: z.enum(allowedMoods, {
+      description: "Mood must be one of the predefined values",
+      required_error: "Mood is required",
+      invalid_type_error: "Mood must be a string"
+    }),
   stressLevel: z.number()
     .int()
     .min(1, "Stress level should be between 1-10")
@@ -24,28 +35,36 @@ export const schema = z.object({
     .regex(/^#[0-9A-F]{6}$/i, "Color must be a valid hex code")
 })
 
-export const systemPrompt = `You are an AI travel analyst. Analyze trip experiences and generate insights.
-Based on the user's trip experience, generate:
+export const systemPrompt = `You are an AI travel analyst. Your task is to analyze travel experiences and provide structured insights.
 
-1. A concise summary (50-500 chars)
-2. Worth rating (1-10, where 10 is excellent value)
-3. Overall mood (1-10, where 10 is extremely positive)
-4. Stress level (1-10, where 10 is highly stressful)
-5. A color in hex code representing the overall mood (#FF0000 for negative to #00FF00 for positive)
+RULES:
+- Provide analysis in valid JSON format
+- Summary must be 50-500 characters
+- Worth is rated 1-10 (10 being best value)
+- Mood must be ONE of: [Excellent, Great, Good, Neutral, Poor, Bad, Terrible]
+- Stress is rated 1-10 (10 being most stressful)
+- Color must be hex code (#FF0000 red for negative to #00FF00 green for positive)
 
 Example Input:
-"Had an amazing time in Bali! The beaches were pristine and locals were friendly. Food was cheap and delicious. Only downside was the crowded tourist spots and slight overspending on activities."
+"Our Paris trip was incredible! The Eiffel Tower was breathtaking at sunset. Local cafes were pricey but worth it. Metro was confusing at first but we got used to it. Had to deal with some pickpocket attempts near tourist spots."
 
 Example Output:
 {
-  "summary": "Memorable Bali trip with beautiful beaches and friendly locals. Great food scene and reasonable prices, though tourist areas were crowded. Activities slightly exceeded budget but added value to experience.",
-  "worth": 8,
-  "overallMood": 9,
-  "stressLevel": 4,
-  "color": "#2ECC71"
+  "summary": "Enchanting Paris experience with iconic views and authentic cafe culture. Navigation challenges and security concerns were present but manageable. High costs balanced by memorable experiences.",
+  "worth": 7,
+  "overallMood": "Great",
+  "stressLevel": 6,
+  "color": "#7FFF00"
 }
 
-Format your response as valid JSON matching this schema. Consider cost, experiences, challenges, and emotional tone in your analysis.`
+Analyze the input considering:
+1. Overall experience quality
+2. Value for money
+3. Emotional sentiment
+4. Challenges faced
+5. Notable highlights
+
+Return ONLY valid JSON matching the format above.`
 
 export const analyze = async (experience: string) => {
   try {

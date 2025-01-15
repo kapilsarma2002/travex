@@ -45,59 +45,59 @@ model Trip {
   // Relationships
   userId     String
   user       User          @relation(fields: [userId], references: [id])
-  activities Activity[]
-  expenses   Expense[]
+  // activities Activity[]
+  // expenses   Expense[]
   analysis   TripAnalysis?
 
   @@unique([userId,id])
 }
 
-// Activity Model (for daily planning)
-model Activity {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// // Activity Model (for daily planning)
+// model Activity {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
 
-  title     String
-  type      ActivityType
-  startTime DateTime
-  endTime   DateTime?
-  duration  DateTime?
-  location  String?
-  notes     String?
-  cost      Float?
+//   title     String
+//   type      ActivityType
+//   startTime DateTime
+//   endTime   DateTime?
+//   duration  DateTime?
+//   location  String?
+//   notes     String?
+//   cost      Float?
 
-  // Relationships
-  tripId   String
-  trip     Trip              @relation(fields: [tripId], references: [id])
-  expenses Expense[]
-  analysis ActivityAnalysis?
+//   // Relationships
+//   tripId   String
+//   trip     Trip              @relation(fields: [tripId], references: [id])
+//   expenses Expense[]
+//   analysis ActivityAnalysis?
 
-  @@index([tripId, startTime]) // Optimized for timeline queries
-}
+//   @@index([tripId, startTime]) // Optimized for timeline queries
+// }
 
-// Expense Tracking
-model Expense {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+// // Expense Tracking
+// model Expense {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
 
-  amount      Float
-  currency    String
-  category    ExpenseCategory
-  description String?
-  date        DateTime
+//   amount      Float
+//   currency    String
+//   category    ExpenseCategory
+//   description String?
+//   date        DateTime
 
-  // Expenses can either be added for a trip or an activity
-  tripId String?
-  trip   Trip?   @relation(fields: [tripId], references: [id])
+//   // Expenses can either be added for a trip or an activity
+//   tripId String?
+//   trip   Trip?   @relation(fields: [tripId], references: [id])
 
-  activityId String?
-  activity   Activity? @relation(fields: [activityId], references: [id])
+//   activityId String?
+//   activity   Activity? @relation(fields: [activityId], references: [id])
 
-  @@index([tripId])
-  @@index([activityId])
-  @@index([category])
-}
+//   @@index([tripId])
+//   @@index([activityId])
+//   @@index([category])
+// }
 
 // AI Analysis Models
 model TripAnalysis {
@@ -110,28 +110,28 @@ model TripAnalysis {
   // AI analysis of the trip
   summary       String @db.Text // Summary of the trip
   worth         Int // Value for money
-  overallMood   Int // overall sentiment of the trip
+  overallMood   String // overall sentiment of the trip
   stressLevel   Int // Travel stress level
   color         String // Color based on the mood
 
   @@index([tripId])
 }
 
-model ActivityAnalysis {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
+// model ActivityAnalysis {
+//   id        String   @id @default(cuid())
+//   createdAt DateTime @default(now())
 
-  activityId String   @unique
-  activity   Activity @relation(fields: [activityId], references: [id])
+//   activityId String   @unique
+//   activity   Activity @relation(fields: [activityId], references: [id])
 
-  // AI analysis of each activity (values 1-10 unless noted)
-  sentimentScore   Float? // -1 to 1, measures overall sentiment
-  excitementLevel  Int? // how thrilling/engaging
-  noveltyFactor    Int? // how new/unusual
-  budgetImpression Int? // cost-effectiveness
+//   // AI analysis of each activity (values 1-10 unless noted)
+//   sentimentScore   Float? // -1 to 1, measures overall sentiment
+//   excitementLevel  Int? // how thrilling/engaging
+//   noveltyFactor    Int? // how new/unusual
+//   budgetImpression Int? // cost-effectiveness
 
-  @@index([activityId])
-}
+//   @@index([activityId])
+// }
 
 // Enums for standardization
 enum TripStatus {
@@ -141,20 +141,20 @@ enum TripStatus {
   CANCELLED
 }
 
-enum ActivityType {
-  SIGHTSEEING
-  FOOD
-  TRANSPORTATION
-  ACCOMMODATION
-  ACTIVITY
-  OTHER
-}
+// enum ActivityType {
+//   SIGHTSEEING
+//   FOOD
+//   TRANSPORTATION
+//   ACCOMMODATION
+//   ACTIVITY
+//   OTHER
+// }
 
-enum ExpenseCategory {
-  ACCOMMODATION
-  FOOD
-  TRANSPORT
-  ACTIVITIES
-  SHOPPING
-  MISC
-}
+// enum ExpenseCategory {
+//   ACCOMMODATION
+//   FOOD
+//   TRANSPORT
+//   ACTIVITIES
+//   SHOPPING
+//   MISC
+// }
