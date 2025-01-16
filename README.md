@@ -1,1 +1,2 @@
-A digital diary that combines mood tracking with travel documentation. Users log their trips, experiences, and daily events while rating their emotions to visualize how different journeys affect their well-being.
+Travex is a Next.js travel management app that lets users log trips and visualize destinations on an interactive world map. Users can track travel details, see them plotted dynamically. It uses AI to analyze your trip experiences!
+Built using Next.js (server components and client components), Leaflet for interactive maps, Prisma for database operations, framer-motion for animations and Clerk for user authentication
