@@ -32,55 +32,47 @@ export default function WorldMap({ places }: { places: Place[] }) {
   const [locations, setLocations] = useState<Place[]>([])
 
   useEffect(() => {
-    if (!places.length) return
+    if (!places?.length) return
 
-    async function geocodePlaces() {
-      const updated = await Promise.all(
-        places.map(async (place) => {
+    async function geocode() {
+      const results = await Promise.all(
+        places.map(async p => {
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(place.destination)}&format=json&limit=1`
+            `https://nominatim.openstreetmap.org/search?` +
+            `q=${encodeURIComponent(p.destination)}&format=json&limit=1`
           )
           const data = await res.json()
           return {
-            ...place,
-            coordinates: data.length > 0
+            ...p,
+            coordinates: data?.[0]
               ? { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) }
               : undefined
           }
         })
       )
-      setLocations(updated.filter(p => p.coordinates))
+      setLocations(results.filter(r => r.coordinates))
     }
-    geocodePlaces()
+    geocode()
   }, [places])
 
   if (!locations.length) return <div className='h-full w-full flex items-center justify-center'>
     <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-4 h-4 border-2 border-gray-300 dark:border-gray-700 border-t-blue-500 rounded-full my-2"
-              />
+      animate={{ rotate: 360 }}
+      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      className="w-4 h-4 border-2 border-gray-300 dark:border-gray-700 border-t-blue-500 rounded-full my-2"
+    />
   </div>
 
   return (
     <MapContainer center={[20, 0]} zoom={2} className="w-full h-full">
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      {locations.map((location) => (
-        location.coordinates && (
-          <Marker
-            key={location.id}
-            icon={customIcon}
-            position={[location.coordinates.lat, location.coordinates.lng]}
-          >
+      {locations.map(loc => (
+        loc.coordinates && (
+          <Marker key={loc.id} icon={customIcon} position={[loc.coordinates.lat, loc.coordinates.lng]}>
             <Popup>
-              <div className="p-3 min-w-[200px]">
-                <h3 className="font-semibold text-lg mb-2">
-                  {location.destination}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {new Date(location.startDate).toLocaleDateString()}
-                </p>
-              </div>
+              {loc.destination}
+              <br />
+              {new Date(loc.startDate).toLocaleDateString()}
             </Popup>
           </Marker>
         )

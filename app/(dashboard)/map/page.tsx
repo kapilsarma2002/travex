@@ -1,36 +1,59 @@
-'use client'
-
-export const dynamic = 'force-dynamic'
-import { useState, useEffect } from 'react'
+import { Suspense } from 'react'
+import { prisma } from '@/utils/db'
+import { getUserByClerkId } from '@/utils/auth'
 import WorldMap from '@/components/WorldMap'
+import { formatPlaces } from '@/utils/ai'
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-export default function MapPage() {
-  const [places, setPlaces] = useState([])
-  const [error, setError] = useState('')
+interface Place {
+  id: string
+  destination: string
+  startDate: Date
+  corrected?: boolean
+}
 
-  useEffect(() => {
-    async function fetchDestinations() {
-      try {
-        const res = await fetch('/api/map')
-        if (!res.ok) {
-          throw new Error(`Request failed with status ${res.status}`)
-        }
-        const data = await res.json()
-        setPlaces(data)
-      } catch (err: any) {
-        console.error(err)
-        setError(err.message)
-        setPlaces([])
-      }
-    }
-    fetchDestinations()
-  }, [])
+export default async function MapPage() {
+  // 1) Server-side data fetch
+  const user = await getUserByClerkId()
+  let formattedPlaces;
+  const destinations = await prisma.trip.findMany({
+    where: { userId: user.id },
+    select: {
+      id: true,
+      destination: true,
+      startDate: true,
+    },
+    orderBy: { startDate: 'desc' },
+  })
 
-  if (error) return <div>Error: {error}</div>
+  if (destinations.length) {
+    formattedPlaces = await formatPlaces(destinations)
 
+    await Promise.all(
+      formattedPlaces
+        .filter((place: Place) => place.corrected)
+        .map((place: Place) =>
+          prisma.trip.update({
+            where: { id: place.id },
+            data: {
+              destination: place.destination,
+            },
+          })
+        )
+    )
+  }
+
+  // 2) Render a server component that includes a Suspense boundary
   return (
-    <div className="w-full h-[calc(100vh-4rem)]">
-      <WorldMap places={places} />
-    </div>
+    <main className="w-full h-[calc(100vh-4rem)]">
+      <Suspense fallback={<div>Loading map…</div>}>
+        {/*
+          3) Pass `places` to the client component.
+          No `dynamic()` with `{ ssr: false }` is needed.
+        */}
+        <WorldMap places={formattedPlaces} />
+      </Suspense>
+    </main>
   )
 }
