@@ -18,7 +18,7 @@ const Question = () => {
     try {
       const { data } = await askQuestion(question)
       if (!data.answer) throw new Error('No answer received')
-      setAnswer(data.answer)
+      setAnswer(answer)
       setQuestion('')
     } catch (error) {
       console.error('Failed to get answer:', error)
